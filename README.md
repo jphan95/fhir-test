@@ -6,7 +6,7 @@ The rest of your application can be built out in `App.js` and beyond.  If additi
 
 Uses fhirclient from this library http://docs.smarthealthit.org/client-js/
 
-Errors with R2 and R3 format, inside node_modules/fhir-visualizers/build/index.js change lines 115-130 to: 
+## Errors with R2 and R3 format, inside `node_modules/fhir-visualizers/build/index.js` change lines 115-130 to: 
 
 `if (raceExt) {
       race =  Array.isArray(raceExt.extension) ? raceExt.extension[0].valueString || raceExt.extension[0].valueCoding.display 
