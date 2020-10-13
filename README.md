@@ -4,6 +4,29 @@ This project is meant to be a template for a minimal SMART on FHIR React applica
 
 The rest of your application can be built out in `App.js` and beyond.  If additional FHIR resources are needed it can fetched in `index.js` by making a call using `client.request()` and passed down to `App.js`.
 
+Uses fhirclient from this library http://docs.smarthealthit.org/client-js/
+
+Errors with R2 and R3 format, inside node_modules/fhir-visualizers/build/index.js change lines 115-130 to: 
+
+`if (raceExt) {
+      race =  Array.isArray(raceExt.extension) ? raceExt.extension[0].valueString || raceExt.extension[0].valueCoding.display 
+      : raceExt.valueCodeableConcept.coding[0].display;
+    } else {
+      race = null;
+    }
+ `
+
+    const ethExt = patient.extension.find(e => {
+      return e.url === 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity';
+    });
+    let ethnicity;
+
+    if (ethExt) {
+      ethnicity = Array.isArray(ethExt.extension) ? ethExt.extension[0].valueString || ethExt.extension[0].valueCoding.display : ethExt.valueCodeableConcept.coding[0].display;
+    } else {
+      ethnicity = null;
+    }
+
 ## Testing with a launcher
 
 1. Run `yarn install` to install the necessary packages.
