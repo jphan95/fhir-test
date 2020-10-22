@@ -5,11 +5,12 @@ interface PatientProviderProps {
   children: ReactNode;
 }
 
-export const PatientContext = createContext<fhir.Patient | null>(null);
+export const PatientContext = createContext<any | null>(null);
 
 export const PatientProvider: FC<PatientProviderProps> = ({ children }) => {
   const client = useFHIRClient();
   const [patient, setPatient] = useState<fhir.Patient | null>(null);
+  console.log(patient)
 
   useEffect(() => {
     client.patient.read().then((patient: fhir.Patient) => setPatient(patient));
@@ -18,9 +19,9 @@ export const PatientProvider: FC<PatientProviderProps> = ({ children }) => {
   return patient == null ? (
     <div>Loading...</div>
   ) : (
-    <PatientContext.Provider value={patient}>{children}</PatientContext.Provider>
+    <PatientContext.Provider value={{patient,setPatient}}>{children}</PatientContext.Provider>
   );
 };
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const usePatient = (): fhir.Patient => useContext(PatientContext)!;
+export const useCtx = (): any => useContext(PatientContext)!;

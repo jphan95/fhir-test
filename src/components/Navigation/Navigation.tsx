@@ -2,7 +2,6 @@ import React, { FC, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import PatientSnapshot from 'components/PatientSnapshot';
-import DropDown from 'components/DropDown';
 
 import classes from './Navigation.module.scss';
 
@@ -11,17 +10,21 @@ type Option = {
   value: string;
 };
 
-const pathwayOptions = [
-  { label: 'Medications', value: 'meds' },
-  { label: 'Chart', value: 'chart' }
-];
+// const pathwayOptions = [
+//   { label: 'Medications', value: 'meds' },
+//   { label: 'Chart', value: 'chart' }
+// ];
 
-const Navigation: FC<{}> = () => {
-  const [pathway, setPathway] = useState<Option | ReadonlyArray<Option> | null>(null);
+interface NavProps {
+  resourcesLength: number;
+}
 
-  const onChangeHandler = (pathway: Option | ReadonlyArray<Option> | null): void => {
-    setPathway(pathway);
-  };
+const Navigation: FC<NavProps> = (props: NavProps) => {
+  // const [pathway, setPathway] = useState<Option | ReadonlyArray<Option> | null>(null);
+
+  // const onChangeHandler = (pathway: Option | ReadonlyArray<Option> | null): void => {
+  //   setPathway(pathway);
+  // };
 
   return (
     <nav className={classes.navigation}>
@@ -32,13 +35,7 @@ const Navigation: FC<{}> = () => {
       </div>
 
       <div className={classes['navigation__right-panel']}>
-        <DropDown
-          label="Pathway:"
-          id="patient-view"
-          options={pathwayOptions}
-          selectedValue={pathway}
-          onChange={onChangeHandler}
-        />
+       <div>{`Fetched ${props.resourcesLength} resources`}</div>
       </div>
     </nav>
   );

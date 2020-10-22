@@ -15,8 +15,11 @@ const smartLaunch = () => {
       clientId: 'Input client id you get when you register the app',
       scope: 'launch/patient openid profile'
     })
-    .then(client => {
-      ReactDOM.render(<App client={client} />, rootElement);
+    .then(fhir => {
+      ReactDOM.render(
+          <App fhir={fhir} />
+        ,rootElement
+      );
     });
 };
 

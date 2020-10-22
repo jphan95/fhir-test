@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { usePatient } from '../PatientProvider';
+import { useCtx } from '../PatientProvider';
 
 import classes from './PatientSnapshot.module.scss';
 
@@ -15,7 +15,7 @@ const getPatientAddress = (address: Array<fhir.Address> = []): string => {
 };
 
 const PatientSnapshot: FC<{}> = () => {
-  const patient = usePatient();
+  const patient = useCtx().patient;
 
   const name = useMemo(() => getPatientName(patient.name), [patient]);
   const address = useMemo(() => getPatientAddress(patient.address), [patient]);
