@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { useCtx } from '../PatientProvider';
+import { StoreProvider, StoreContext, useStore } from '../StoreProvider';
 
 import {
   AllergiesVisualizer,
@@ -26,12 +26,13 @@ const getResourceByType = (patientRecord: ReadonlyArray<any>, resourceType: stri
 };
 
 const PatientRecord: FC<PatientRecordProps> = ({ resources, loading, client }) => {
-  const patient = useCtx().patient;
-
+  const { store, reducer } = useStore();
+  const { patient } = store;
+  console.log(resources)
   return (
     <div style={{display: 'flex'}}>
       <div style={{width: '60%'}}>
-        <PatientVisualizer client={client} patient={patient} observations={getResourceByType(resources, 'Observation')}/>
+        <PatientVisualizer dispatch={reducer.dispatch} client={client} patient={patient} observations={getResourceByType(resources, 'Observation')}/>
         <ConditionsVisualizer rows={getResourceByType(resources, 'Condition')} />
         <ObservationsVisualizer rows={getResourceByType(resources, 'Observation')} />
         <ReportsVisualizer rows={getResourceByType(resources, 'DiagnosticReport')} />

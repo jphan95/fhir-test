@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { PatientContext } from 'components/PatientProvider';
+import { StoreContext } from 'components/StoreProvider';
 
 interface PatientProviderProps {
   children: ReactNode;
@@ -14,7 +14,7 @@ export const mockedPatient = {
 };
 
 const MockedPatientProvider: FC<PatientProviderProps> = ({ patient = null, children }) => (
-  <PatientContext.Provider value={patient || mockedPatient}>{children}</PatientContext.Provider>
+  <StoreContext.Provider value={patient || mockedPatient}>{children}</StoreContext.Provider>
 );
 
 export default MockedPatientProvider;

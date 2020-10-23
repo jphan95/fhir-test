@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState, useContext } from 'react';
 import api from '../../api';
-import {makeBP} from './BP';
+import { makeBG } from './BG';
+import { makeBP } from './BP';
 
 const Measurement = ({ patient, loading, client }) => {
   const [measurements, setMeasurements] = useState([]);
@@ -34,17 +35,20 @@ const Measurement = ({ patient, loading, client }) => {
         api.createUser(user).then((res) => {
           console.log(res)
           setUser(res.data.user);
-          console.log(res.user);
         })
       })
     }
   }
 
-  const migrate = async (bp) => {
+  const migrate = async (reading) => {
     const ehr_id = user.ehr_id;
-    const ret = makeBP(bp, ehr_id);
-    console.log(ret)
-    client.create(ret).then((ret) => console.log(ret))
+    let send;
+    if (reading.type === "Blood Pressure") {
+      send = makeBP(reading, ehr_id);
+    } else if (reading.type === "Blood Glucose") {
+      send = makeBG(reading, ehr_id);
+    }
+    client.create(send).then((res) => console.log(res))
   }
   
   return loading ? <div>loading</div> : (
@@ -55,6 +59,7 @@ const Measurement = ({ patient, loading, client }) => {
         {measurements.filter((m) => m.type === 'Blood Glucose').map((bg, i) => 
           <li key={i} style={{listStyle: 'none'}}>
             BG Level: {bg.reading.value + " " + bg.reading.unit} {bg.date}
+            <div style={{border: "1px solid lightblue", borderRadius: "5px", width: "6em" }} onClick={() => migrate(bg)}>Send to EHR</div>
           </li>
         )}
           

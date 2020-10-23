@@ -156,14 +156,11 @@ class PatientVisualizer extends React.Component {
     }
 
     const updatePatient = (bool) => {
-      console.log(this.props.client);
       if (bool) {
-        this.props.client.update(this.state.patient).then((ret) => this.setState({patient: ret, edit: false}))
-        console.log(this.state)
+        this.props.client.update(this.state.patient).then((patient) => this.props.dispatch({patient, type: 'updatePatient'}))
       } else {
         this.setState({edit: true})
       }
-      console.log(this.state)
     }
 
     const renderEdit = () => {
@@ -182,7 +179,6 @@ class PatientVisualizer extends React.Component {
       const firstName = e.currentTarget.value;
       patient.name[0].given = firstName;
       this.setState(patient);
-      console.log(patient)
     }
     
     const style = {
