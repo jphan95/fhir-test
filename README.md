@@ -8,9 +8,9 @@ Uses fhirclient from this library http://docs.smarthealthit.org/client-js/
 
 1. Run `npm install` within /fhir-test root folder to install the necessary packages.
 2. cd to /backend and run `npm install` to install backend packages
-3. run a local instance of a db with mongod and run `npm seed` to seed measurements and users
-4. run `npm run server` to start backend server, port is 
-5. switch to /fhir-test and run `npm start` to start local frontend
+3. run a local instance of a db with mongod, within seperate terminal run `npm seed` to seed measurements and users
+4. run `npm run server` in a seperate terminal to start backend server
+5. switch to /fhir-test and within seperate terminal run `npm start` to start local frontend
 6. Launch the application from the SMART launcher.
     - Visit [SMART Launcher](http://launch.smarthealthit.org)
     - Launch `http://localhost:3000`
