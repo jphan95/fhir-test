@@ -157,9 +157,10 @@ class PatientVisualizer extends React.Component {
 
     const updatePatient = (bool) => {
       if (bool) {
-        this.props.client.update(this.state.patient).then((patient) => this.props.dispatch({patient, type: 'updatePatient'}))
+        this.props.client.update(this.state.patient).then((patient) => this.props.dispatch({patient, type: 'updatePatient'}));
+        this.setState({edit: false});
       } else {
-        this.setState({edit: true})
+        this.setState({edit: true});
       }
     }
 
