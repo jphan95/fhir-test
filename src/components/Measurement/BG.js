@@ -37,6 +37,7 @@ export const makeBG = (bg, ehr_id) => {
         "reference": `Patient/${ehr_id}`
     },
     "effectiveDateTime": bg.date,
+    "issued": getComputedStyle.date,
     "valueQuantity": {
         "value": bg.reading.value * 18,
         "unit": "mg/dL",

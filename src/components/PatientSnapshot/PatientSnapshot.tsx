@@ -16,7 +16,8 @@ const getPatientAddress = (address: Array<fhir.Address> = []): string => {
 
 const PatientSnapshot: FC<{}> = () => {
   const { store, reducer } = useStore();
-  const { patient } = store;
+  console.log(useStore());
+  const patient = store.patient;
 
   const name = useMemo(() => getPatientName(patient.name), [patient]);
   const address = useMemo(() => getPatientAddress(patient.address), [patient]);

@@ -9,6 +9,7 @@ import { getPatientRecord } from '../utils/fhirExtract';
 import { FHIRClientProvider } from './FHIRClient';
 import { StoreProvider } from './StoreProvider';
 import PatientRecord from './PatientRecord/PatientRecord';
+import { debug } from 'console';
 
 interface AppProps {
   client: any; // TODO: fhirclient.Client
@@ -18,9 +19,9 @@ interface AppProps {
 const reducer = (state:any, action:any) => {
   switch (action.type) {
     case 'updatePatient':
-      console.log(state,action);
-      state.patient = action.patient;
-      return state
+      return {...state, patient: action.patient};
+    case 'updateUser': 
+      return {...state, user: action.user};
     default: 
       return state
   }
@@ -29,25 +30,27 @@ const reducer = (state:any, action:any) => {
 const App: FC<AppProps> = ({ fhir }) => {
   const [patientRecords, setPatientRecords] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(true);
-
+  console.log(fhir)
   const initState = {};
   const [state, dispatch] = useReducer(reducer, initState)
-
   useEffect(() => {
     getPatientRecord(fhir).then((records: Array<any>) => {
       setPatientRecords(records);
       setLoading(false);
     });
-    fhir.patient.read().then((patient:fhir.Patient) => dispatch({type: "updatePatient", patient}))
+    // fhir.patient.read().then((patient:fhir.Patient) => dispatch({type: "updatePatient", patient}))
+    // fhir.user.read().then((user:any) => dispatch({type: 'updateUser', user}))
+    
   }, [fhir]);
 
   return (
   <Router>
+    {console.log(state)}
     <FHIRClientProvider fhir={fhir}>
       <StoreProvider store={state} reducer={{dispatch}}>
         <div>
           <Header logo={logo} />
-          <Navigation resourcesLength={patientRecords.length}/>
+          <Navigation resourcesLength={patientRecords && patientRecords.length}/>
         </div>
         <div>
           <PatientRecord client={fhir} resources={patientRecords} loading={loading} />

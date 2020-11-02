@@ -21,8 +21,9 @@ const applyMapping = (bundle) => {
  */
 function getPatientRecord(client) {
   return client.request(`/metadata`).then(statement => {
+    console.log(client)
     if (
-      statement.rest[0].operation.find(
+      statement.rest[0].operation && statement.rest[0].operation.find(
         e => (e.definition.reference || e.definition) === 'OperationDefinition/Patient--everything'
       )
     ) {
@@ -45,7 +46,7 @@ function getPatientRecord(client) {
             supportedResources.push(filters[0]);
           }
         } else if (resource.searchParam) {
-          const filters = resource.searchParams.filter(target => {
+          const filters = resource.searchParam.filter(target => {
             return target.name === `patient` || target.name === `subject`;
           });
           if (filters.length > 0) {

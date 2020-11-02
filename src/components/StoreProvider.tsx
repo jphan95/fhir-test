@@ -16,7 +16,7 @@ export const StoreProvider: FC<PatientProviderProps> = ({ store, reducer, childr
     // client.patient.read().then((patient: fhir.Patient) => setPatient(patient));
     // client.patient.read().then((patient: fhir.Patient) => dispatch({type: 'updatePatient', patient}))
   // }, [client]);
-
+  
   return store.patient == null ? (
     <div>Loading...</div>
   ) : (

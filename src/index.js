@@ -12,10 +12,11 @@ const smartLaunch = () => {
   // Authorize application
   FHIR.oauth2
     .init({
-      clientId: 'Input client id you get when you register the app',
+      clientId: "aac145fa-a1b3-4730-b5ac-c072b383394a",
       scope: 'launch/patient openid profile'
     })
     .then(fhir => {
+      console.log(fhir)
       ReactDOM.render(
           <App fhir={fhir} />
         ,rootElement

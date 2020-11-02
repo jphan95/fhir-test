@@ -37,7 +37,7 @@ export const makeBP = (data, ehr_id) => {
         "reference": `Patient/${ehr_id}`
     },
     "effectiveDateTime": data.date,
-    "issued": "2017-08-08T03:22:23.211-04:00",
+    "issued": data.date,
     "component": [
         {
             "code": {
