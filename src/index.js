@@ -10,18 +10,18 @@ const rootElement = document.getElementById('root');
 
 const smartLaunch = () => {
   // Authorize application
-  FHIR.oauth2
-    .init({
-      clientId: "aac145fa-a1b3-4730-b5ac-c072b383394a",
-      scope: 'launch/patient openid profile'
-    })
-    .then(fhir => {
-      console.log(fhir)
+  // FHIR.oauth2
+  //   .init({
+  //     clientId: "aac145fa-a1b3-4730-b5ac-c072b383394a",
+  //     scope: 'launch/patient openid profile'
+  //   })
+  //   .then(fhir => {
+  //     console.log(fhir)
       ReactDOM.render(
-          <App fhir={fhir} />
+          <App />
         ,rootElement
       );
-    });
+    // });
 };
 
 smartLaunch();

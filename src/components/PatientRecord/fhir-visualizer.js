@@ -141,8 +141,8 @@ class PatientVisualizer extends React.Component {
 
     const observations = this.props.observations || [];
     const searchableObs = observations.slice().reverse();
-    const height_obs = searchableObs.find(o => o.code.coding[0].display === 'Body Height');
-    const weight_obs = searchableObs.find(o => o.code.coding[0].display === 'Body Weight');
+    const height_obs = searchableObs.find(o => o.code.coding && o.code.coding[0].display === 'Body Height');
+    const weight_obs = searchableObs.find(o => o.code.coding && o.code.coding[0].display === 'Body Weight');
     const cause_of_death_obs = null;
     let lat, lng;
 

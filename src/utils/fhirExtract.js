@@ -21,7 +21,6 @@ const applyMapping = (bundle) => {
  */
 function getPatientRecord(client) {
   return client.request(`/metadata`).then(statement => {
-    console.log(client)
     if (
       statement.rest[0].operation && statement.rest[0].operation.find(
         e => (e.definition.reference || e.definition) === 'OperationDefinition/Patient--everything'
@@ -30,22 +29,24 @@ function getPatientRecord(client) {
       // supports patient everything
       return getEverything(client).then(bundle => applyMapping(bundle));
     } else {
-      console.log('Cannot use $everything, using reverse includes instead');
+      console.log(statement)
+      // console.log('Cannot use $everything, using reverse includes instead');
       const supportedResources = [];
-      let revIncludeResources = [];
+      // let revIncludeResources = [];
       statement.rest[0].resource.forEach(resource => {
-        if (resource.type === 'Patient') {
-          if (resource.searchRevInclude) {
-            revIncludeResources = resource.searchRevInclude;
-          }
-        } else if (resource.searchInclude) {
-          const filters = resource.searchInclude.filter(target => {
-            return target === `${resource.type}:patient` || target === `${resource.type}:subject`;
-          });
-          if (filters.length > 0) {
-            supportedResources.push(filters[0]);
-          }
-        } else if (resource.searchParam) {
+      //   if (resource.type === 'Patient') {
+      //     if (resource.searchRevInclude) {
+      //       revIncludeResources = resource.searchRevInclude;
+      //     }
+      //   } else if (resource.searchInclude) {
+      //     const filters = resource.searchInclude.filter(target => {
+      //       return target === `${resource.type}:patient` || target === `${resource.type}:subject`;
+      //     });
+      //     if (filters.length > 0) {
+      //       supportedResources.push(filters[0]);
+      //     }
+      //   } else 
+      if (resource.searchParam) {
           const filters = resource.searchParam.filter(target => {
             return target.name === `patient` || target.name === `subject`;
           });
@@ -54,13 +55,15 @@ function getPatientRecord(client) {
           }
         }
       });
-      if (revIncludeResources.length > 0) {
-        return getEverythingRevInclude(client, revIncludeResources, getEverythingManually).then(bundle => applyMapping(bundle));
-      } else if (supportedResources.length > 0) {
-        return getEverythingRevInclude(client, supportedResources, getEverythingManually).then(bundle => applyMapping(bundle));
-      } else {
+      // if (revIncludeResources.length > 0) {
+      //   return getEverythingRevInclude(client, revIncludeResources, getEverythingManually).then(bundle => applyMapping(bundle));
+      // } else 
+      // if (supportedResources.length > 0) {
+        // return getEverythingRevInclude(client, supportedResources, getEverythingManually).then(bundle => applyMapping(bundle));
+
+      if (supportedResources.length > 0) {
         console.log('Cannot use reverse includes, retrieving all resources manually from predefined list');
-        return getEverythingManually(client, ALL_RESOURCES_PATIENT_REFERENCE).then(bundle => applyMapping(bundle));
+        return getEverythingManually(client, supportedResources).then(bundle => applyMapping(bundle));
       }
     }
   });
@@ -82,7 +85,8 @@ function getEverything(client) {
  * it only provides a one layer deep search, so the results might be different from $everything.
  */
 function getEverythingManually(client, supportedResources) {
-  supportedResources.push('Patient:_id');
+  // supportedResources.push('Patient:_id');
+  console.log(supportedResources)
   const requests = [];
   supportedResources.forEach(resource => {
     resource = resource.split(':');
@@ -95,7 +99,7 @@ function getEverythingManually(client, supportedResources) {
       })
       .catch(error => {
         console.log(`failed to fetch ${resource}`);
-        console.error(error);
+        // console.error(error);
       });
     requests.push(request);
   });
@@ -117,9 +121,11 @@ function getEverythingManually(client, supportedResources) {
  */
 function getEverythingRevInclude(client, supportedResources, onError) {
   const query = supportedResources.join('&_revinclude=');
+  console.log(query);
   return client
     .request(`/Patient?_id=${client.patient.id}&_revinclude=${query}`, { flat: true })
     .then(result => {
+      console.log(result)
       return result;
     })
     .catch(error => {
