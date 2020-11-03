@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import './bootstrap.css';
 import moment from 'moment';
+import api from '../../api';
+import { useStore } from '../StoreProvider';
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -73,7 +75,7 @@ const obsValue = entry => {
     return entry.valueString;
   }
 
-  if (entry.code.coding[0].display === "Blood Pressure") {
+  if (entry.code.coding[0].display === "Blood Pressure" || entry.code.coding[0].display === "BP") {
     if (!entry.component[0].valueQuantity) {
       return ''; // WTF!!
     }
@@ -106,8 +108,45 @@ const duration = period => {
 class PatientVisualizer extends React.Component {
   state = {
     edit: false,
+    enroll: null,
     patient: this.props.patient
   }
+  getUser = async (patient) => {
+    const ehr_id = patient.id;
+
+    if (patient) {  
+      api.getUser(ehr_id).then((res) => {
+        const user = res.data.data[0];
+        console.log(user)
+        this.setState({enroll: true})
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(patient);
+        this.setState({enroll: false})
+      })
+    } else {
+      this.setState({enroll: false})
+    }
+  }
+
+  enrollUser = async (patient) => {
+    const user = {
+      firstName: patient.name[0].given[0],
+      lastName: patient.name[0].family,
+      ehr_id: patient.id,
+      birthDate: patient.birthDate,
+      telephone: patient.telecome ? patient.telecom[0] : "999-999-9999"
+    }
+    api.createUser(user).then((res) => {
+      this.setState({enroll: true});
+    })
+  }
+  
+  componentDidMount(){
+    this.getUser(this.props.patient);
+  }
+
   render() {
     const patient = this.state.patient;
     patient.extension = patient.extension || [];
@@ -140,9 +179,10 @@ class PatientVisualizer extends React.Component {
     }
 
     const observations = this.props.observations || [];
+    console.log(observations)
     const searchableObs = observations.slice().reverse();
-    const height_obs = searchableObs.find(o => o.code.coding && o.code.coding[0].display === 'Body Height');
-    const weight_obs = searchableObs.find(o => o.code.coding && o.code.coding[0].display === 'Body Weight');
+    const height_obs = searchableObs.find(o => o.code.coding && (o.code.coding[0].display === 'Height' || o.code.coding[0].display === 'Body Height'));
+    const weight_obs = searchableObs.find(o => o.code.coding && (o.code.coding[0].display === 'Weight' || o.code.coding[0].display === 'Body Weight'));
     const cause_of_death_obs = null;
     let lat, lng;
 
@@ -157,7 +197,8 @@ class PatientVisualizer extends React.Component {
 
     const updatePatient = (bool) => {
       if (bool) {
-        this.props.client.update(this.state.patient).then((patient) => this.props.dispatch({patient, type: 'updatePatient'}));
+        // this.props.client.update(this.state.patient).then((patient) => this.props.dispatch({patient, type: 'updatePatient'}));
+        this.props.dispatch({patient, type: 'updatePatient'});
         this.setState({edit: false});
       } else {
         this.setState({edit: true});
@@ -173,6 +214,15 @@ class PatientVisualizer extends React.Component {
         <div style={style} onClick={() => updatePatient(false)}>
           Edit
         </div>
+    }
+
+    const renderEnroll = () => {  
+      const style = {marginLeft: '200px', borderRadius: '5px', background: '#6b8eb6', color: 'white', fontSize: '1em', fontFamily: 'Open Sans, sans-serif', fontWeight: 'bold', textTransform: 'uppercase'};
+      if (this.state.enroll === false) {
+        return <button style={style} onClick={() => this.enrollUser(this.state.patient)}>Ready to Enroll</button>
+      } else if (this.state.enroll === true) {
+        return <button style={{...style, background: 'lightgrey'}} disabled>Enrolled </button>
+      }
     }
 
     const handleChange = (e) => {
@@ -199,7 +249,7 @@ class PatientVisualizer extends React.Component {
       <div>
         <div style={style.sectionHeader}>
           Patient
-          {renderEdit()}
+          {renderEnroll()}
         </div>
         <div style={{display: 'flex', justifyContent: 'space-between', margin: '0px 10px'}}>
           <div>
@@ -345,7 +395,7 @@ class GenericVisualizer extends React.Component {
   }
 
   render() {
-    return React.createElement("div", {
+    return this.props.rows.length > 0 ? React.createElement("div", {
       id: this.props.title
     }, React.createElement("div", {
       className: "health-record__header"
@@ -359,7 +409,7 @@ class GenericVisualizer extends React.Component {
       id: `p_${this.props.title}_head`
     }, React.createElement("tr", null, this.renderHeaderLine())), React.createElement("tbody", {
       id: `p_${this.props.title}_list`
-    }, this.props.rows && this.props.rows.slice().reverse().map(c => this.renderBodyLine(c)))));
+    }, this.props.rows && this.props.rows.slice().reverse().map(c => this.renderBodyLine(c))))) : null;
   }
 
 }
@@ -468,14 +518,16 @@ class MedicationsVisualizer extends GenericVisualizer {}
 
 _defineProperty(MedicationsVisualizer, "defaultProps", {
   title: 'Medications',
-  columns: [{
-    title: 'RxNorm',
-    versions: '*',
-    getter: c => c.medicationCodeableConcept.coding[0].code
-  }, {
+  columns: [
+  // {
+  //   title: 'RxNorm',
+  //   versions: '*',
+  //   getter: c => c.medicationCodeableConcept.coding[0].code
+  // }, 
+  {
     title: 'Medication',
     versions: '*',
-    getter: c => c.medicationCodeableConcept.coding[0].display
+    getter: c => c.medicationCodableConcept ? c.medicationCodeableConcept.coding[0].display : c.medicationReference.display
   }, {
     title: 'Date Prescribed',
     versions: '*',

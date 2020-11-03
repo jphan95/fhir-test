@@ -29,8 +29,6 @@ const Navigation: FC<NavProps> = (props: NavProps) => {
   return (
     <nav className={classes.navigation}>
       <div className={classes['navigation__left-panel']}>
-        <FontAwesomeIcon icon="chevron-left" className={classes.navigation__back} />
-
         <PatientSnapshot />
       </div>
 

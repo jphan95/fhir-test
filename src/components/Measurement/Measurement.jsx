@@ -1,44 +1,54 @@
 import React, { FC, useEffect, useState, useContext } from 'react';
+// import axios from 'axios';
 import api from '../../api';
 import { makeBG } from './BG';
 import { makeBP } from './BP';
 
-const Measurement = ({ patient, loading, client }) => {
+const Measurement = ({ patient, loading, client, dispatch }) => {
   const [measurements, setMeasurements] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     api.getAllMeasurements().then((res) => {  
       setMeasurements(res.data.data)
-    }).then(() => {
-      getSetUser(patient);
     })
+    // .then(() => {
+    //   getSetUser(patient);
+    // })
+    // axios({
+    //   method: 'get',
+    //   url: 'http://192.81.133.207:8080/fhir/Patient',
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*',
+    //     'Accept': 'application/fhir+json'
+    //   }
+    // }).then((res) => console.log(res))
   }, [])
 
-  const getSetUser = async (patient) => {
-    const ehr_id = patient.id;
+  // const getSetUser = async (patient) => {
+  //   const ehr_id = patient.id;
 
-    if (patient) {
-      api.getUser(ehr_id).then((res) => {
-        const user = res.data.data[0];
-        setUser(user)
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log(patient)
-        const user = {
-          firstName: patient.name[0].given[0],
-          lastName: patient.name[0].family,
-          ehr_id,
-          birthDate: patient.birthDate
-        }
-        api.createUser(user).then((res) => {
-          console.log(res)
-          setUser(res.data.user);
-        })
-      })
-    }
-  }
+  //   if (patient) {
+  //     api.getUser(ehr_id).then((res) => {
+  //       const user = res.data.data[0];
+  //       setUser(user)
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       console.log(patient)
+  //       const user = {
+  //         firstName: patient.name[0].given[0],
+  //         lastName: patient.name[0].family,
+  //         ehr_id,
+  //         birthDate: patient.birthDate
+  //       }
+  //       api.createUser(user).then((res) => {
+  //         console.log(res)
+  //         setUser(res.data.user);
+  //       })
+  //     })
+  //   }
+  // }
 
   const migrate = async (reading) => {
     const ehr_id = user.ehr_id;
@@ -46,7 +56,7 @@ const Measurement = ({ patient, loading, client }) => {
     if (reading.type === "Blood Pressure") {
       send = makeBP(reading, ehr_id);
     } else if (reading.type === "Blood Glucose") {
-      send = makeBG(reading, ehr_id);
+      // send = makeBG(reading, ehr_id);
     }
     client.create(send).then((res) => console.log(res))
   }

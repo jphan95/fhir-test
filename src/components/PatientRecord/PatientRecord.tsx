@@ -26,13 +26,13 @@ const getResourceByType = (patientRecord: ReadonlyArray<any>, resourceType: stri
 };
 
 const PatientRecord: FC<PatientRecordProps> = ({ resources, loading, client }) => {
-  const { store, reducer } = useStore();
-  const { patient } = store;
+  const { store, dispatch } = useStore();
+  // const { patient } = store;
   console.log(resources)
   return (
     <div style={{display: 'flex'}}>
       <div style={{width: '60%'}}>
-        <PatientVisualizer dispatch={reducer.dispatch} client={client} patient={patient} observations={getResourceByType(resources, 'Observation')}/>
+        <PatientVisualizer dispatch={dispatch} client={client} patient={store.patient} observations={getResourceByType(resources, 'Observation')}/>
         <ConditionsVisualizer rows={getResourceByType(resources, 'Condition')} />
         <ObservationsVisualizer rows={getResourceByType(resources, 'Observation')} />
         <ReportsVisualizer rows={getResourceByType(resources, 'DiagnosticReport')} />
@@ -43,7 +43,7 @@ const PatientRecord: FC<PatientRecordProps> = ({ resources, loading, client }) =
         <EncountersVisualizer rows={getResourceByType(resources, 'Encounter')} />
         <ImmunizationsVisualizer rows={getResourceByType(resources, 'Immunization')} />
       </div>
-      <Measurement patient={patient} client={client} loading={loading} />
+      <Measurement patient={store.patient} client={client} loading={loading} dispatch={dispatch}/>
     </div>
   );
 };

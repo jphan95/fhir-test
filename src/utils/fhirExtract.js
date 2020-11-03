@@ -86,12 +86,17 @@ function getEverything(client) {
  */
 function getEverythingManually(client, supportedResources) {
   // supportedResources.push('Patient:_id');
-  console.log(supportedResources)
+  console.log(supportedResources);
+  console.log(client)
   const requests = [];
   supportedResources.forEach(resource => {
     resource = resource.split(':');
+    let url = `${resource[0]}?${resource[1]}=${client.patient.id}`;
+    if (resource[0] === 'Observation') {
+      url = url + '&category=vital-signs,laboratory'
+    }
     const request = client
-      .request(`${resource[0]}?${resource[1]}=${client.patient.id}`, { flat: true, pageLimit: 0 })
+      .request(url, { flat: true, pageLimit: 0 })
       .then(result => {
         if (result.length > 0) {
           return result;

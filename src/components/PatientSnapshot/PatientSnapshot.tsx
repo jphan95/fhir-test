@@ -1,12 +1,13 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useStore } from '../StoreProvider';
+import api from '../../api';
 
 import classes from './PatientSnapshot.module.scss';
 
 const getPatientName = (name: Array<fhir.HumanName> = []): string => {
   const entry = name.find(n => n.use === 'official') || name[0];
-  return entry ? `${(entry.given || []).join(' ')} ${entry.family}` : 'No name';
+  return entry ? `${entry.given} ${entry.family}` : 'No name';
 };
 
 const getPatientAddress = (address: Array<fhir.Address> = []): string => {
@@ -15,12 +16,12 @@ const getPatientAddress = (address: Array<fhir.Address> = []): string => {
 };
 
 const PatientSnapshot: FC<{}> = () => {
-  const { store, reducer } = useStore();
-  console.log(useStore());
+  // const [enroll, setEnroll] = useState<boolean | null>(null);
+  const { store } = useStore();
   const patient = store.patient;
 
-  const name = useMemo(() => getPatientName(patient.name), [patient]);
-  const address = useMemo(() => getPatientAddress(patient.address), [patient]);
+  const name = useMemo(() => getPatientName(patient.name), [store]);
+  const address = useMemo(() => getPatientAddress(patient.address), [store]);
 
   return (
     <div className={classes['patient-snapshot']}>

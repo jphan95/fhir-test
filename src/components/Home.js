@@ -16,18 +16,21 @@ import Navigation from 'components/Navigation';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'updatePatient':
-      console.log(action)
       return {...state, patient: action.patient};
     case 'updateUser': 
-      console.log(action)
       return {...state, user: action.user};
+    case 'updateRecords':
+      return {...state, records: action.records};
+    case 'updateEnroll': 
+    console.log(action)
+      return {...state, enroll: action.enroll};
     default: 
       return state
   }
 }
 
 export default function Home() {
-  const [patientRecords, setPatientRecords] = useState([]);
+  // const [patientRecords, setPatientRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fhir, setFhir] = useState(null);
   const initState = {};
@@ -35,14 +38,13 @@ export default function Home() {
 
   useEffect(() => {
     FHIR.oauth2.ready().then((client) => {
-      window.FHIR = client;
       setFhir(client);
       getPatientRecord(client).then((records) => {
-        console.log(records)
-        setPatientRecords(records);
+        // setPatientRecords(records);
+        dispatch({type: "updateRecords", records})
         setLoading(false)
         client.patient.read().then((patient) => dispatch({type: "updatePatient", patient}))
-        client.user.read().then((user) => dispatch({type: 'updateUser', user}))
+        // client.user.read().then((user) => dispatch({type: 'updateUser', user}))
     })
   })
   }, [])
@@ -50,13 +52,13 @@ export default function Home() {
 
   return (
     <FHIRClientProvider fhir={fhir}>
-      <StoreProvider store={state} reducer={{dispatch}}>
+      <StoreProvider store={state} dispatch={dispatch}>
         <div>
           <Header logo={logo} />
-          <Navigation resourcesLength={patientRecords && patientRecords.length}/>
+          <Navigation resourcesLength={state.records && state.records.length}/>
         </div>
         <div>
-          <PatientRecord client={fhir} resources={patientRecords} loading={loading} />
+          <PatientRecord client={fhir} resources={state.records} loading={loading} dispatch={dispatch} />
         </div>
     </StoreProvider>
   </FHIRClientProvider>

@@ -3,13 +3,13 @@ import { useFHIRClient } from './FHIRClient';
 
 interface PatientProviderProps {
   children: ReactNode;
-  reducer: any;
+  dispatch: any;
   store: any;
 }
 
 export const StoreContext = createContext<any | null>(null);
 
-export const StoreProvider: FC<PatientProviderProps> = ({ store, reducer, children }) => {
+export const StoreProvider: FC<PatientProviderProps> = ({ store, dispatch, children }) => {
   // const client = useFHIRClient();
   // const [patient, setPatient] = useState<fhir.Patient | null>(null);
   // useEffect(() => {
@@ -20,7 +20,7 @@ export const StoreProvider: FC<PatientProviderProps> = ({ store, reducer, childr
   return store.patient == null ? (
     <div>Loading...</div>
   ) : (
-    <StoreContext.Provider value={{store: store, reducer}}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={{store: store, dispatch}}>{children}</StoreContext.Provider>
   );
 };
 
