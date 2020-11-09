@@ -3,10 +3,11 @@ import React, { FC, useEffect, useState, useContext } from 'react';
 import api from '../../api';
 import { makeBG } from './BG';
 import { makeBP } from './BP';
+import { getPatientRecord, getPatientObservations } from '../../utils/fhirExtract';
 
-const Measurement = ({ patient, loading, client, dispatch }) => {
+const Measurement = ({ store, loading, client, dispatch, encounter }) => {
   const [measurements, setMeasurements] = useState([]);
-  const [user, setUser] = useState(null);
+  const { patient, user } = store;
 
   useEffect(() => {
     api.getAllMeasurements().then((res) => {  
@@ -51,56 +52,79 @@ const Measurement = ({ patient, loading, client, dispatch }) => {
   // }
 
   const migrate = async (reading) => {
+    console.log(store)
+    console.log(reading)
     const ehr_id = user.ehr_id;
+    console.log(encounter)
+    // console.log(encounter_id)
     let send;
     if (reading.type === "Blood Pressure") {
-      send = makeBP(reading, ehr_id);
+      send = makeBP(reading, ehr_id, encounter.id);
     } else if (reading.type === "Blood Glucose") {
-      // send = makeBG(reading, ehr_id);
+      send = makeBG(reading, ehr_id);
     }
-    client.create(send).then((res) => console.log(res))
+    client.create(send).then((res) => {
+      console.log(res);
+      getPatientObservations(client).then((observations) => {
+        console.log(observations)
+        dispatch({type: 'updateObservations', observations})
+      })
+    })
+  }
+
+  const renderButton = (bp) => {
+    let bool;
+    if (encounter && !store.observations.find((o) => o.effectiveDateTime === bp.date)) {
+      bool = true;
+    } else {
+      bool = false;
+    }
+    return bool ? <div style={{...style.font, ...style.button}} onClick={() => migrate(bp)}>Send to EHR</div> : null
   }
   
   return loading ? <div>loading</div> : (
-    <div style={{width: '40%'}}>
+    store.enroll === true ?
+    <div style={{...style.container}}>
       <div>
         <div style={style.sectionHeader}>Blood Glucose Summary</div>
-
-        {measurements.filter((m) => m.type === 'Blood Glucose').map((bg, i) => 
-          <li key={i} style={{listStyle: 'none'}}>
-            BG Level: {bg.reading.value + " " + bg.reading.unit} {bg.date}
-            <div style={{border: "1px solid lightblue", borderRadius: "5px", width: "6em" }} onClick={() => migrate(bg)}>Send to EHR</div>
-          </li>
-        )}
-          
-          {/* Average Fasting
-          Average Pre-Meal
-          Average Post-Meal
-          Hypoglycemia Count	#0
-          Bedtime Count	#0
-          Overnight Count	#0
-          Critical High Count	#0
-          Critical Low Count	#0
-          Low Count	#0
-          Normal Count	#0
-          High Count */}
-
-        <div style={style.sectionHeader}>Blood Pressure Summary</div>
-
-        {measurements.filter((m) => m.type === 'Blood Pressure').map((bp, i) => 
-          <li key={i} style={{listStyle: 'none'}}>
-            Diastolic: {bp.reading.diastolic.value} {bp.reading.diastolic.unit} Systolic: {bp.reading.systolic.value} {bp.reading.systolic.unit} {bp.date} 
-            <div style={{border: "1px solid lightblue", borderRadius: "5px", width: "6em" }} onClick={() => migrate(bp)}>Send to EHR</div>
-          </li>
-        )}
-    
-          {/* Average BP
-          Normal Count
-          Elevated Count
-          Stage 1 Hypertension
-          Stage 2 Hypertension
-          Critical High 
-          Arrhythmia Count  */}
+        <table style={{width: '100%'}}>
+          <tbody>
+          <tr>
+            <th>Blood Glucose</th>
+            <th>Date</th>
+          </tr>
+          {measurements.filter((m) => m.type === 'Blood Glucose').map((bg, i) => 
+            <tr key={i}>
+              <td>{bg.reading.value + " " + bg.reading.unit}</td>
+              <td>{bg.date}</td>
+            </tr>
+          )}
+          </tbody>
+        </table>
+        <div style={{...style.sectionHeader, marginTop: '40px'}}>Blood Pressure Summary</div>
+        <table style={{width: '100%'}}>
+          <tbody>
+            <tr>
+              <th>Systolic</th>
+              <th>Diastolic</th>
+              <th>Date</th>
+            </tr>
+            {measurements.filter((m) => m.type === 'Blood Pressure').map((bp, i) => 
+              <tr key={i}>
+                <td>{bp.reading.systolic.value} {bp.reading.systolic.unit}</td>
+                <td>{bp.reading.diastolic.value} {bp.reading.diastolic.unit}</td>
+                <td>{bp.date}</td>
+                <td>{renderButton(bp)}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    : 
+    <div style={{...style.container, ...style.font}}>
+      <div >
+        Enroll patient to access
       </div>
     </div>
   );
@@ -113,7 +137,27 @@ const style = {
     'fontSize': '1em',
     'fontWeight': 'bold',
     'textTransform': 'uppercase',
-    'margin': '40px 0'
+    'marginBottom': '40px'
+  }, 
+  font: {
+    fontSize: '1em',
+    fontFamily: 'Open Sans, sans-serif',
+    fontWeight: 'bold',
+    textTransform: 'uppercase'
+  },
+  button: {
+    borderRadius: '5px',
+    background: '#6b8eb6',
+    color: 'white',
+    width: '8em',
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '2px'
+  },
+  container: {
+    background: 'ghostwhite',
+    width: '40%',
+    padding: '3em'
   }
 }
 

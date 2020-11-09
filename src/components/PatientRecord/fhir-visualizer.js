@@ -111,35 +111,38 @@ class PatientVisualizer extends React.Component {
     enroll: null,
     patient: this.props.patient
   }
+
   getUser = async (patient) => {
     const ehr_id = patient.id;
 
     if (patient) {  
       api.getUser(ehr_id).then((res) => {
         const user = res.data.data[0];
-        console.log(user)
-        this.setState({enroll: true})
+        this.setState({enroll: true});
+        this.props.dispatch({type: 'updateEnroll', enroll: true});
+        this.props.dispatch({type: 'updateUser', user})
       })
       .catch((err) => {
         console.log(err);
         console.log(patient);
-        this.setState({enroll: false})
+        this.setState({enroll: false});
+        this.props.dispatch({type: 'updateEnroll', enroll: false})
       })
-    } else {
-      this.setState({enroll: false})
     }
   }
 
   enrollUser = async (patient) => {
     const user = {
-      firstName: patient.name[0].given[0],
-      lastName: patient.name[0].family,
+      firstName: patient.name.find(n => n.use === 'official').given[0],
+      lastName: patient.name.find(n => n.use === 'official').family,
       ehr_id: patient.id,
       birthDate: patient.birthDate,
       telephone: patient.telecome ? patient.telecom[0] : "999-999-9999"
     }
     api.createUser(user).then((res) => {
       this.setState({enroll: true});
+      this.props.dispatch({type: 'updateEnroll', enroll: true});
+      this.props.dispatch({type: 'updateUser', user});
     })
   }
   
@@ -149,6 +152,8 @@ class PatientVisualizer extends React.Component {
 
   render() {
     const patient = this.state.patient;
+    const fName = this.state.patient.name.find(n => n.use === 'official').given[0];
+    const lName = this.state.patient.name.find(n => n.use === 'official').family;
     patient.extension = patient.extension || [];
     const raceExt = patient.extension.find(e => {
       return e.url === 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race';
@@ -179,7 +184,6 @@ class PatientVisualizer extends React.Component {
     }
 
     const observations = this.props.observations || [];
-    console.log(observations)
     const searchableObs = observations.slice().reverse();
     const height_obs = searchableObs.find(o => o.code.coding && (o.code.coding[0].display === 'Height' || o.code.coding[0].display === 'Body Height'));
     const weight_obs = searchableObs.find(o => o.code.coding && (o.code.coding[0].display === 'Weight' || o.code.coding[0].display === 'Body Weight'));
@@ -219,7 +223,7 @@ class PatientVisualizer extends React.Component {
     const renderEnroll = () => {  
       const style = {marginLeft: '200px', borderRadius: '5px', background: '#6b8eb6', color: 'white', fontSize: '1em', fontFamily: 'Open Sans, sans-serif', fontWeight: 'bold', textTransform: 'uppercase'};
       if (this.state.enroll === false) {
-        return <button style={style} onClick={() => this.enrollUser(this.state.patient)}>Ready to Enroll</button>
+        return <button style={style} onClick={() => this.enrollUser(this.state.patient)}>Refer Patient</button>
       } else if (this.state.enroll === true) {
         return <button style={{...style, background: 'lightgrey'}} disabled>Enrolled </button>
       }
@@ -253,8 +257,8 @@ class PatientVisualizer extends React.Component {
         </div>
         <div style={{display: 'flex', justifyContent: 'space-between', margin: '0px 10px'}}>
           <div>
-              <div>First Name: <input disabled={!this.state.edit} defaultValue={patient.name[0].given} onChange={(e) => handleChange(e)}></input></div>
-              <div>Last Name: <input disabled={!this.state.edit} defaultValue={patient.name[0].family}></input></div>
+              <div>First Name: <input disabled={!this.state.edit} defaultValue={fName} onChange={(e) => handleChange(e)}></input></div>
+              <div>Last Name: <input disabled={!this.state.edit} defaultValue={lName}></input></div>
               <div>Gender: <input disabled={!this.state.edit} defaultValue={patient.gender}></input></div>
               <div>Date of Birth: <input disabled={!this.state.edit} defaultValue={patient.birthDate}></input></div>
               <div>Address: <input disabled={!this.state.edit} defaultValue={patient.address[0].line.join(' ')}></input></div>
@@ -426,12 +430,14 @@ _defineProperty(ConditionsVisualizer, "defaultProps", {
     title: 'Condition',
     versions: '*',
     getter: c => c.code.coding[0].display
-  }, {
-    title: 'Date of Onset',
-    versions: '*',
-    format: 'date',
-    getter: c => c.onsetDateTime
-  }, {
+  }, 
+  // {
+  //   title: 'Date of Onset',
+  //   versions: '*',
+  //   format: 'date',
+  //   getter: c => c.onsetDateTime
+  // },
+   {
     title: 'Date Resolved',
     'versions': '*',
     format: 'date',

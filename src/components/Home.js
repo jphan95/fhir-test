@@ -20,10 +20,15 @@ const reducer = (state, action) => {
     case 'updateUser': 
       return {...state, user: action.user};
     case 'updateRecords':
+      console.log(action)
       return {...state, records: action.records};
-    case 'updateEnroll': 
-    console.log(action)
+    case 'updateObservations':
+      console.log(action)
+      return {...state, observations: action.observations};
+    case 'updateEnroll':
       return {...state, enroll: action.enroll};
+    case 'updateEncounter': 
+      return {...state, encounter: action.encounter}
     default: 
       return state
   }
@@ -39,9 +44,11 @@ export default function Home() {
   useEffect(() => {
     FHIR.oauth2.ready().then((client) => {
       setFhir(client);
+      // dispatch({type: 'updateEncounter', encounter: client.encounter});
       getPatientRecord(client).then((records) => {
         // setPatientRecords(records);
         dispatch({type: "updateRecords", records})
+        dispatch({type: 'updateObservations', observations: records.filter((resource) => resource.resourceType === 'Observation')})
         setLoading(false)
         client.patient.read().then((patient) => dispatch({type: "updatePatient", patient}))
         // client.user.read().then((user) => dispatch({type: 'updateUser', user}))

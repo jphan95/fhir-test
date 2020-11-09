@@ -19,7 +19,7 @@ export default class Launcher extends React.Component {
     componentDidMount() {
         SMART.authorize({
             clientId: "41fe1b29-1dc6-46e7-beaf-cfa7995d08dc",
-            scope: "user/*.* user/Patient.read user/Observation.read user/Condition.read launch online_access openid profile",
+            scope: "user/*.* user/Patient.read user/Observation.read user/Condition.read launch launch/encounter online_access openid profile",
             redirectUri: "http://localhost:3000/app"
         });
     }

@@ -4,7 +4,7 @@ module.exports = [{
       value: 2.1,
       unit: "mmol/L"
     },
-    date: "2019-10-19"
+    date: "2019-10-19T23:00:00Z"
   },
   {
     type: "Blood Glucose",
@@ -12,7 +12,7 @@ module.exports = [{
       value: 2.3,
       unit: "mmol/L"
     },
-    date: "2019-11-19"
+    date: "2019-11-19T23:00:00Z"
   },
   {
     type: "Blood Glucose",
@@ -20,7 +20,7 @@ module.exports = [{
       value: 2.4,
       unit: "mmol/L"
     },
-    date: "2019-12-19"
+    date: "2019-12-19T23:00:00Z"
   },
   {
     type: "Blood Glucose",
@@ -28,7 +28,7 @@ module.exports = [{
       value: 2.3,
       unit: "mmol/L"
     },
-    date: "2019-12-21"
+    date: "2019-12-21T23:00:00Z"
   },
   {
     type: "Blood Glucose",
@@ -36,7 +36,7 @@ module.exports = [{
       value: 2.5,
       unit: "mmol/L"
     },
-    date: "2019-12-25"
+    date: "2019-12-25T23:00:00Z"
   },
   {
      type: "Blood Pressure",
@@ -50,7 +50,7 @@ module.exports = [{
          unit: "mmHg"
        }
      },
-     date: "2019-10-19"
+     date: "2019-10-19T23:00:00Z"
    },
    {
      type: "Blood Pressure",
@@ -64,7 +64,7 @@ module.exports = [{
          unit: "mmHg"
        }
      },
-     date: "2019-11-19"
+     date: "2019-11-19T23:00:00Z"
    },
    {
      type: "Blood Pressure",
@@ -78,7 +78,7 @@ module.exports = [{
          unit: "mmHg"
        }
      },
-     date: "2019-12-19"
+     date: "2019-12-19T23:00:00Z"
    },
    {
      type: "Blood Pressure",
@@ -92,7 +92,7 @@ module.exports = [{
          unit: "mmHg"
        }
      },
-     date: "2019-12-21"
+     date: "2019-12-21T23:00:00Z"
    },
    {
      type: "Blood Pressure",
@@ -106,5 +106,5 @@ module.exports = [{
          unit: "mmHg"
        }
      },
-     date: "2019-12-25"
+     date: "2019-12-25T23:00:00Z"
    }]

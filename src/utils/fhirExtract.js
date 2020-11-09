@@ -95,6 +95,9 @@ function getEverythingManually(client, supportedResources) {
     if (resource[0] === 'Observation') {
       url = url + '&category=vital-signs,laboratory'
     }
+    if (resource[0] === 'Condition') {
+      url = url + '&category=encounter-diagnosis'
+    }
     const request = client
       .request(url, { flat: true, pageLimit: 0 })
       .then(result => {
@@ -119,6 +122,20 @@ function getEverythingManually(client, supportedResources) {
   });
 }
 
+function getPatientObservations(client) {
+  let url = `$Observation?patient=${client.patient.id}&category=vital-signs,laboratory`;
+  client.request(url, {flat: true, pageLimit: 0})
+  .then(result => {
+    if (result.length > 0) {
+      return result;
+    }
+  })
+  .catch(error => {
+    console.log(`failed to fetch Observation`);
+    // console.error(error);
+  });
+}
+
 /**
  * Uses the _revinclude FHIR search parameter to request the patient resource and any resource that refers to it.
  * The list of resources it checks is retrieved from the Capability Statement.  It is slightly better than the manual
@@ -140,4 +157,4 @@ function getEverythingRevInclude(client, supportedResources, onError) {
     });
 }
 
-export { getPatientRecord };
+export { getPatientRecord, getPatientObservations };
