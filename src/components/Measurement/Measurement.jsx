@@ -114,7 +114,7 @@ const Measurement = ({ store, loading, client, dispatch, encounter }) => {
                 <td>{bp.reading.systolic.value} {bp.reading.systolic.unit}</td>
                 <td>{bp.reading.diastolic.value} {bp.reading.diastolic.unit}</td>
                 <td>{bp.date}</td>
-                <td>{renderButton(bp)}</td>
+                {/* <td>{renderButton(bp)}</td> */}
               </tr>
             )}
           </tbody>

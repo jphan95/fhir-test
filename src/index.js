@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import FHIR from 'fhirclient';
 
-import App from './components/App.tsx';
+import App from './components/App';
 import './styles/index.scss';
 import './utils/fontawesomeLibrary';
 

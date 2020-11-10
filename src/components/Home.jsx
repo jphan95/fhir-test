@@ -43,6 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     FHIR.oauth2.ready().then((client) => {
+      window.fhir = client;
       setFhir(client);
       // dispatch({type: 'updateEncounter', encounter: client.encounter});
       getPatientRecord(client).then((records) => {
